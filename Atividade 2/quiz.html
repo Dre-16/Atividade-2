@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz</h1>
+        <div id="question"></div>
+        <div id="options"></div>
+        <button class="next" onclick="nextQuestion()">Próxima questão!</button> <!-- Alterando o texto e a classe do botão -->
+    </div>
+
+    <script>
+        let questions = JSON.parse(localStorage.getItem('quizQuestions'));
+        let currentQuestion = 0;
+        let selectedAnswer;
+        let selectedButton; // Adicionando a declaração global aqui
+
+        function loadQuestion() {
+            document.getElementById('question').innerText = questions[currentQuestion].question;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            questions[currentQuestion].options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.id = 'option-' + index;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(index) {
+            selectedAnswer = String.fromCharCode(65 + index); // Convert index to letter (A, B, C, D)
+            if (selectedButton) {
+                selectedButton.classList.remove('selected');
+            }
+            selectedButton = document.getElementById('option-' + index);
+            selectedButton.classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (selectedAnswer === undefined) {
+                alert('Por favor, selecione uma resposta');
+                return;
+            }
+
+            // Check answer
+            if (selectedAnswer === questions[currentQuestion].answer) {
+                alert('Correto!');
+            } else {
+                alert('Incorreto!');
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                alert('Quiz concluído!');
+                localStorage.removeItem('quizQuestions');
+                window.location.href = 'index.html';
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
